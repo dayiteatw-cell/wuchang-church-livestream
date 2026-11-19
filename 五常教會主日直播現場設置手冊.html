@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>五常教會主日直播自動化與現場設置手冊</title>
+  <style>
+    :root {
+      --primary: #1d4ed8;
+      --primary-light: #eff6ff;
+      --primary-dark: #1e40af;
+      --success: #15803d;
+      --success-light: #f0fdf4;
+      --warning: #b45309;
+      --warning-light: #fffbeb;
+      --danger: #b91c1c;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --bg-body: #f8fafc;
+      --bg-card: #ffffff;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -2px rgba(0,0,0,0.04);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Roboto, sans-serif;
+      background-color: var(--bg-body);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 60px;
+    }
+
+    /* 頂部導航與標題 */
+    header {
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: #ffffff;
+      padding: 40px 20px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(30, 58, 138, 0.15);
+    }
+    header h1 { font-size: 2rem; margin-bottom: 10px; font-weight: 700; }
+    header p { font-size: 1.05rem; opacity: 0.9; max-width: 800px; margin: 0 auto; }
+    .badge-bar {
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      background: rgba(255,255,255,0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      backdrop-filter: blur(4px);
+    }
+
+    /* 主容器 */
+    .container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    /* 模組卡片 */
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 28px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--primary-light);
+    }
+    .card-header .num-badge {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    .card-header h2 { font-size: 1.35rem; color: #0f172a; }
+
+    /* 表格樣式 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+      font-size: 0.95rem;
+    }
+    th, td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background-color: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 600;
+    }
+    tr:hover { background-color: #f1f5f9; }
+
+    /* 程式碼與座標標籤 */
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      border: 1px solid #e2e8f0;
+    }
+    .coord-box {
+      display: inline-block;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-family: monospace;
+    }
+
+    /* 警示與提示框 */
+    .alert {
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-size: 0.95rem;
+    }
+    .alert-info { background: var(--primary-light); border-left: 4px solid var(--primary); color: #1e3a8a; }
+    .alert-success { background: var(--success-light); border-left: 4px solid var(--success); color: #14532d; }
+    .alert-warning { background: var(--warning-light); border-left: 4px solid var(--warning); color: #78350f; }
+
+    /* 圖解展示框 */
+    .ascii-box {
+      background: #0f172a;
+      color: #38bdf8;
+      font-family: ui-monospace, monospace;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin: 15px 0;
+    }
+
+    /* SOP 檢核表 */
+    .checklist {
+      list-style: none;
+      margin: 15px 0;
+    }
+    .checklist li {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: #ffffff;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .checklist li:hover { border-color: var(--primary); background: #fafafa; }
+    .checklist input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--primary);
+    }
+    .checklist .step-time {
+      font-weight: 700;
+      color: var(--primary);
+      min-width: 110px;
+    }
+
+    /* 複製按鈕 */
+    .copy-btn {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 4px 8px;
+      font-size: 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-left: 6px;
+    }
+    .copy-btn:hover { background: #e2e8f0; }
+
+    /* 列印樣式 */
+    @media print {
+      body { background: #fff; padding: 0; }
+      header { background: #2563eb !important; -webkit-print-color-adjust: exact; padding: 20px; }
+      .card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+      .copy-btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>五常教會主日直播自動化與現場設置手冊</h1>
+    <p>真 1080P 無限制版 ｜ 全自動多機位輪播 ｜ 免手動切換 ｜ 徹底解放影音同工</p>
+    <div class="badge-bar">
+      <span class="badge">📍 台北市五常教會</span>
+      <span class="badge">🎥 三機位+簡報無縫直出</span>
+      <span class="badge">⚡ OBS Advanced Scene Switcher 核心</span>
+      <span class="badge">🚀 GTX 1650 NVENC 獨立硬體編碼</span>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- 模組一：硬體機位配置 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="num-badge">1</div>
+        <h2>三機 + 簡報硬體佈局（正面距離 4 米實地精準版）</h2>
+      </div>
+      <p>現場距離講台為 4 公尺，為免除監視器大頭俯角與超廣角人物過小，機位配置如下：</p>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>訊號來源</th>
+            <th>指定設備</th>
+            <th>連線方式與焦段設定</th>
+            <th>角色任務與畫面重點</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>機位 1<br>(正面主鏡)</strong></td>
+            <td><strong>Samsung Galaxy A27</strong></td>
+            <td><strong>USB 實體線</strong>（插主機後方藍色 USB 3.0 孔）<br>距離講台 4 米機位<br><span class="coord-box">1.0x 主鏡頭 (50MP)</span></td>
+            <td><strong>講道核心主鏡頭</strong>。在 4 米距離下，1.0x 鏡頭視野涵蓋 5.4 米，平視自然且完美包容講台與走動走廊，畫質純淨銳利無邊緣畸變。</td>
+          </tr>
+          <tr>
+            <td><strong>機位 2<br>(側拍副鏡)</strong></td>
+            <td><strong>iPhone 10 (X)</strong></td>
+            <td><strong>USB 實體線</strong>（插主機後方 USB 孔）<br>廁所前斜拍 (約35°角)<br><span class="coord-box">1.0x 或 2.0x 光學望遠</span></td>
+            <td><strong>神態半身特寫</strong>。蘋果人像發色通透自然，具備 2x 純光學無損放大，專門捕捉講員面部表情與手勢。</td>
+          </tr>
+          <tr>
+            <td><strong>機位 3<br>(會眾全景)</strong></td>
+            <td><strong>第三台備用 Android 手機</strong></td>
+            <td><strong>5GHz Wi-Fi 無線傳輸</strong>（免走線跨越會堂走道）<br>音控桌或後方 2 米高位俯拍<br><span class="coord-box">標準廣角</span></td>
+            <td><strong>現場氛圍點綴</strong>。捕捉會眾同心聆聽背影，穿插 6 秒快閃，增添臨場感。走 5GHz 無線乾淨利落不絆倒人。</td>
+          </tr>
+          <tr>
+            <td><strong>訊號 4<br>(投影機簡報/歌詞)</strong></td>
+            <td><strong>本機 PowerPoint 簡報</strong><br><span style="font-size: 0.85rem; color: #15803d; font-weight: 600;">(與 OBS 同台電腦雙螢幕輸出)</span></td>
+            <td><strong>顯卡 HDMI 延伸螢幕直出投影機</strong><br>OBS「顯示器擷取 (顯示器 2)」或「視窗擷取」<br><span class="coord-box">1080p 60fps / 零延遲免擷取卡</span></td>
+            <td><strong>經文、重點與詩歌歌詞</strong>。本機 VRAM 內部直接數位抓取，<strong>完全免買、免插 HDMI 擷取卡！</strong>省下 USB 頻寬留給手機，文字 100% 銳利無雜訊。</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert-success" style="margin-top: 15px;">
+        <strong>🖥️ 簡報與直播「同台電腦雙螢幕」極佳優勢與設定指南（同工必看！）：</strong><br>
+        • <strong>硬體接線</strong>：GTX 1650 顯卡輸出埠 1 接音控桌主螢幕（顯示器 1）；輸出埠 2 接 HDMI 線至會堂大投影機（顯示器 2）。在 Windows 鍵盤按 <code>Win + P</code> 選擇<strong>【延伸 (Extend)】</strong>。<br>
+        • <strong>PowerPoint 放映設定</strong>：在 PPT 點選「投影片放映」➔「設定投影片放映」➔ 監視器選「監視器 2（投影機）」並勾選「使用演講者檢視畫面」。同工在主螢幕看控制面板、備忘稿與 OBS，會堂投影機則投出滿版無雜訊簡報。<br>
+        • <strong>OBS 零成本純數位擷取</strong>：在 OBS 來源新增「顯示器擷取」命名為 <code>【投影機簡報畫面】</code>，選擇「顯示器 2（投影機）」，擷取方式選 <code>DXGI Desktop Duplication</code>。<br>
+        • <strong>關鍵優勢</strong>：<strong>完全不需購買 HDMI 轉 USB 擷取卡！</strong>不僅節省預算，更徹底解放主機 USB 總線頻寬，確保 Galaxy A27 與 iPhone X 兩台實體線手機順暢無阻。
+      </div>
+
+      <div class="alert alert-info">
+        <strong>💡 為什麼 4 米距離用 1.0x 主鏡頭最好？</strong><br>
+        1.0x 鏡頭是 Galaxy 最核心的 5000 萬高畫素感光元件，進光量大。4 米距離下視野剛好是 5.4 米，完全不需要開 0.5x 超廣角（避免牧師縮得像螞蟻）。俯角僅約 15 度，完全沒有監視器大頭感！
+      </div>
+    </div>
+
+    <!-- 模組二：手機連線方案 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="num-badge">2</div>
+        <h2>真 1080P 手機連線設置（雙 USB 有線 + 單 5GHz Wi-Fi 無線三開架構）</h2>
+      </div>
+      <div class="alert alert-info">
+        <strong>💡 連線黃金原則：「核心講道雙機走實體 USB，會眾全景走 5GHz Wi-Fi」</strong><br>
+        • <strong>正面主鏡 (Galaxy A27) 與側面副鏡 (iPhone X)</strong>：走 <strong>USB 實體線</strong>（插主機後方藍色 USB 3.0 孔），享受 480 Mbps 滿載頻寬，零延遲、零掉幀，且邊播邊充不掉電！<br>
+        • <strong>會眾全景 (第三台安卓機)</strong>：走 <strong>5GHz Wi-Fi 無線傳輸</strong>，免去跨越中央走道拉線絆倒會友的風險；因會眾全景僅快閃 6 秒且為大景靜態背影，5GHz 頻寬充裕且對極微小延遲不敏感。
+      </div>
+
+      <h3 style="margin: 15px 0 10px 0; color: #1e3a8a;">首選主力：Iriun 4K Webcam（雙 USB 有線 + 單 Wi-Fi 無線三開 1080P）</h3>
+      <ol style="margin-left: 20px; line-height: 1.8;">
+        <li><strong>下載安裝</strong>：電腦安裝 Windows 版 <a href="https://iriun.com/" target="_blank">iriun.com</a>；Galaxy A27、iPhone X 與第三台安卓手機分別下載 <strong>Iriun 4K Webcam</strong> App。</li>
+        <li><strong>Android 設備啟用 USB 偵錯</strong>：
+          <ul style="margin-left: 20px; margin-top: 4px;">
+            <li>Galaxy A27 與第三台安卓機：「設定」➔「關於手機」➔「軟體資訊」➔ 連續按「版本號碼」7 次開啟開發者模式 ➔ 回設定點「開發人員選項」➔ 將 <strong>USB 偵錯</strong> 開啟。</li>
+          </ul>
+        </li>
+        <li><strong>解析度鎖定</strong>：三台手機端 App 開啟後，解析度手動點選切換為 <code>1920×1080</code>。</li>
+        <li><strong>OBS 訊號各自獨立三路指派</strong>：
+          <ul style="margin-left: 20px; margin-top: 5px;">
+            <li><strong>正面主鏡 (Galaxy A27，USB 有線)</strong>：新增「視訊擷取裝置」➔ 選擇 <code>Iriun Webcam #1</code> (1080P)。</li>
+            <li><strong>側面副鏡 (iPhone X，USB 有線)</strong>：新增「視訊擷取裝置」➔ 選擇 <code>Iriun Webcam #2</code> (1080P)。</li>
+            <li><strong>會眾全景 (第三台安卓機，5GHz Wi-Fi 無線)</strong>：新增「視訊擷取裝置」➔ 選擇 <code>Iriun Webcam #3</code> (1080P)。</li>
+          </ul>
+        </li>
+      </ol>
+
+      <h3 style="margin: 20px 0 10px 0; color: #1e3a8a;">備選方案：VDO.Ninja（瀏覽器直接開，免裝 App）</h3>
+      <p style="font-size: 0.95rem;">手機開 Safari/Chrome 進入 <code>vdo.ninja</code> 選擇後置鏡頭並按 START。<strong>在 OBS 貼上網址時，務必在網址最後面加上這串高碼率鎖定參數：</strong></p>
+      <div style="margin-top: 10px;">
+        <code>&quality=0&bitrate=6000&scale=100</code>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('&quality=0&bitrate=6000&scale=100'); alert('已複製高碼率參數！');">複製參數</button>
+      </div>
+
+      <h3 style="margin: 24px 0 10px 0; color: #15803d; border-top: 1px dashed #cbd5e1; padding-top: 18px;">⚡ 關鍵必看：正面主鏡 24 小時電源管理與 USB 連線守則（免來回奔走音控桌）</h3>
+      <p style="font-size: 0.95rem; line-height: 1.8;">
+        正面主鏡 Galaxy A27 架設於距離講台 4 米處，為避免影音同工在音控桌與講台間頻繁奔走，請務必遵循以下電源與連線四大守則：
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin: 15px 0;">
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px;">
+          <h4 style="color: #166534; font-size: 0.95rem; margin-bottom: 6px;">🔌 1. 邊播邊充：插主機後方【藍色 USB 3.0 孔】</h4>
+          <p style="font-size: 0.88rem; color: #1e293b; line-height: 1.6;">
+            • <strong>藍色 USB 3.0 (SS)</strong>：供電 <code>5V / 0.9A~1.5A</code>，電力充足，2 小時直播電量收支平衡或越充越滿！<br>
+            • <strong>避免前面板黑孔 (USB 2.0)</strong>：僅 0.5A 供電不足會緩慢掉電。
+          </p>
+        </div>
+
+        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px;">
+          <h4 style="color: #1e40af; font-size: 0.95rem; margin-bottom: 6px;">🛡️ 2. 防電池膨脹老化：開【三星 80% 電池保護】</h4>
+          <p style="font-size: 0.88rem; color: #1e293b; line-height: 1.6;">
+            • <strong>設定</strong>：手機「設定」➔「電池」➔ 開啟「電池保護」設為【最大 (80%)】。<br>
+            • <strong>效果</strong>：充到 80% 物理斷電，壽命延長 4 倍且 100% 不膨脹！平日電腦關機 USB 斷電，5000mAh 休眠 7 天僅耗電約 30%，週日開機自動補電。
+          </p>
+        </div>
+
+        <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 14px;">
+          <h4 style="color: #92400e; font-size: 0.95rem; margin-bottom: 6px;">⚠️ 3. 電源控制：徹底關機指令 vs 遠端休眠</h4>
+          <p style="font-size: 0.88rem; color: #1e293b; line-height: 1.6;">
+            • <strong>徹底關機指令（長假保養）</strong>：執行 <code>adb -d reboot -p</code>（或在 Scrcpy 視窗按 <code>Ctrl+P</code> 點選關機），手機即安全存檔並完全關閉電源。<br>
+            • <strong>⚠️ 徹底關機警語</strong>：手機徹底關機後<strong>無法</strong>透過 USB 遠端開機，下次使用<strong>必須走至腳架旁按手機實體電源鍵開機！</strong><br>
+            • <strong>平日最佳解法（免離座休眠/喚醒）</strong>：電腦做捷徑執行 <code>adb -d shell input keyevent 26</code>，平日按一下熄屏深層休眠，週日按一下喚醒點亮！
+          </p>
+        </div>
+
+        <div style="background: #fdf2f8; border: 1px solid #fbcfe8; border-radius: 8px; padding: 14px;">
+          <h4 style="color: #9d174d; font-size: 0.95rem; margin-bottom: 6px;">📱 4. Scrcpy 熄屏操控與多手機無衝突隔離</h4>
+          <p style="font-size: 0.88rem; color: #1e293b; line-height: 1.6;">
+            • <strong>螢幕熄滅黑科技</strong>：執行 <code>scrcpy --turn-screen-off</code>，電腦能滑鼠滾輪縮放 (Zoom) 與點擊對焦，手機實體螢幕全黑不發熱。<br>
+            • <strong>雙安卓機無衝突隔離</strong>：捷徑工具已精準配置 <code>-d</code>（只綁定 USB 有線主鏡 Galaxy A27）與 <code>-e</code>（只綁定 Wi-Fi 無線安卓機），兩台同時在線也絕不衝突報錯！
+          </p>
+        </div>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 18px; margin-top: 18px;">
+        <h4 style="color: #1e3a8a; font-size: 1.05rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          <span>🔄</span> 5. 三台手機開機自啟動 ＆ 休眠喚醒全攻略（A27 / ASUS / iPhone X）
+        </h4>
+        <p style="font-size: 0.92rem; line-height: 1.7; color: #334155; margin-bottom: 14px;">
+          現場三台手機因作業系統（Android vs iOS）與連線方式不同，各機位的開機自啟動、喚醒、休眠與防發熱機制規劃如下：
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+          <!-- Galaxy A27 (Android - USB 有線) -->
+          <div style="background: #ffffff; border-left: 4px solid #16a34a; border-radius: 6px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+            <h5 style="color: #15803d; font-size: 0.95rem; margin-bottom: 8px; font-weight: 700;">🟢 正面主鏡 Galaxy A27（Android - USB 有線）</h5>
+            <ol style="margin-left: 18px; font-size: 0.88rem; line-height: 1.7; color: #1e293b;">
+              <li><strong>解鎖限制</strong>：螢幕鎖定類型改為<strong>【無】</strong>或<strong>【滑動】</strong>。</li>
+              <li><strong>三星日常行程</strong>：「設定」➔「模式與日常行程」➔ 條件選【手機已開啟】或【充電中】➔ 動作選【開啟 Iriun Webcam】。</li>
+              <li><strong>電腦一鍵總控</strong>：點擊桌面 <code>【主日開機】一鍵喚醒全場相機.bat</code> 自動喚醒亮屏並開 Iriun；散會點 <code>【主日散會】一鍵休眠全場相機.bat</code> 自動黑屏休眠。</li>
+            </ol>
+            <div style="margin-top: 10px; font-size: 0.82rem; background: #f0fdf4; color: #166534; padding: 6px 10px; border-radius: 4px;">
+              ✨ <strong>效果</strong>：同工全程不用離開音控桌，電腦一鍵控制遠端 4 米腳架手機！
+            </div>
+          </div>
+
+          <!-- ASUS 會眾機 (Android - Wi-Fi 無線) -->
+          <div style="background: #ffffff; border-left: 4px solid #7c3aed; border-radius: 6px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+            <h5 style="color: #6d28d9; font-size: 0.95rem; margin-bottom: 8px; font-weight: 700;">🟣 會眾全景 ASUS 機（Android - Wi-Fi 5GHz 無線）</h5>
+            <ol style="margin-left: 18px; font-size: 0.88rem; line-height: 1.7; color: #1e293b;">
+              <li><strong>解鎖限制</strong>：螢幕鎖定類型改為<strong>【滑動】</strong>或<strong>【無】</strong>。</li>
+              <li><strong>Wi-Fi 遠端喚醒</strong>：點擊 <code>喚醒會眾全景(ASUS_無線).bat</code>（或一鍵開機總控），透過 Wi-Fi 自動連線 ➔ 點亮螢幕 ➔ 解鎖 ➔ <strong>自動啟動 Iriun</strong>！</li>
+              <li><strong>Wi-Fi 遠端休眠（日常最佳黃金解）</strong>：點擊 <code>休眠會眾全景(ASUS_無線).bat</code>（或一鍵散會總控），自動<strong>強制終止 Iriun App（釋放感光元件與停送 Wi-Fi 串流）</strong>並黑屏深層休眠，溫度降至常溫、極致省電，且下週仍能「一鍵無線喚醒」！</li>
+              <li><strong>能否透過 Wi-Fi 徹底關機？</strong>：
+                <ul style="margin-left: 15px; margin-top: 4px;">
+                  <li><strong>技術上可行</strong>：執行 <code>徹底關閉會眾全景(ASUS_無線).bat</code> 可透過 Wi-Fi 送出關機指令。</li>
+                  <li>⚠️ <strong>致命缺點</strong>：手機徹底斷電後，<strong>內部 Wi-Fi 晶片亦斷電停止運作，手機不支援網路遠端開機！下週將無法透過電腦開機</strong>，同工必須手動到後方腳架按電源鍵。</li>
+                  <li><strong>結論</strong>：每週聚會請使用「<strong>休眠</strong>」（停 App + 熄屏）；僅在春節連假或長期不使用時才用「<strong>徹底關機</strong>」。</li>
+                </ul>
+              </li>
+              <li><strong>IP 智慧記憶</strong>：首次輸入後自動記在 <code>asus_ip.txt</code>，後續免再敲鍵盤。</li>
+            </ol>
+            <div style="margin-top: 10px; font-size: 0.82rem; background: #f5f3ff; color: #6d28d9; padding: 6px 10px; border-radius: 4px;">
+              ✨ <strong>效果</strong>：免走線、免跨越走道，日常休眠不發燙，隔空一鍵喚醒！
+            </div>
+          </div>
+
+          <!-- iPhone X (iOS - USB 有線) -->
+          <div style="background: #ffffff; border-left: 4px solid #0284c7; border-radius: 6px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+            <h5 style="color: #0369a1; font-size: 0.95rem; margin-bottom: 8px; font-weight: 700;">🍎 側拍副鏡 iPhone X（iOS - USB 有線）：休眠與喚醒指南</h5>
+            <ul style="margin-left: 18px; font-size: 0.88rem; line-height: 1.7; color: #1e293b;">
+              <li><strong>電腦能否用 BAT 指令控制 iPhone 休眠喚醒？</strong><br>
+                <strong>答案：電腦指令無法直接控制。</strong> Apple 具備嚴格的 iOS 沙盒封閉保護，禁止外部電腦發送模擬電源鍵指令（除非越獄，但越獄易導致直播閃退）。
+              </li>
+              <li><strong>☀️ 最佳喚醒妙招（iOS 插電自動亮屏 ＋ 自動開 Iriun）</strong>：
+                <ul style="margin-left: 15px; margin-top: 4px;">
+                  <li>iPhone 黑屏休眠時，<strong>只要 USB 線一供電（電腦開機），螢幕會被硬體自動點亮！</strong></li>
+                  <li><strong>搭配「捷徑」自動化（只需設 1 次）</strong>：<br>
+                    1. 打開「捷徑」App ➔「自動化」➔ 新增個人自動化。<br>
+                    2. 條件選【充電器 ➔ 已連接】。<br>
+                    3. 動作搜尋並加入【打開 App：Iriun Webcam】。<br>
+                    4. 關閉「執行前詢問」。<br>
+                    ➔ <strong>效果</strong>：週日電腦一開機，iPhone 自動亮屏並秒跳 Iriun 攝影機畫面！
+                  </li>
+                </ul>
+              </li>
+              <li><strong>🌙 最佳休眠妙招（手邊 1 秒按鍵，免拔線）</strong>：
+                <ul style="margin-left: 15px; margin-top: 4px;">
+                  <li>正面 A27 與 ASUS 機遠在講台與後方才需遠端指令；而 <strong>iPhone X 架在音控桌側邊，就在同工手邊！</strong></li>
+                  <li>散會後同工順手<strong>「按一下右側實體電源鍵」</strong>，瞬間黑屏休眠；一整週插著線待機僅耗電約 15%，完全不用關機！</li>
+                </ul>
+              </li>
+              <li><strong>🔥 OLED 防發熱保護</strong>：直播時將螢幕亮度手動拉到最低（或開啟「降低白點值」），整場直播機身清涼不發燙、防烙印！</li>
+            </ul>
+            <div style="margin-top: 10px; font-size: 0.82rem; background: #f0f9ff; color: #0369a1; padding: 6px 10px; border-radius: 4px;">
+              💡 <strong>操作總結</strong>：週日電腦開機 ➔ iPhone X 自動亮屏跳 Iriun；散會同工手邊按一下側邊鍵 ➔ 瞬間黑屏休眠，簡單又優雅！
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Iriun 相機順序綁定與啟動後快速對調 -->
+      <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 18px; margin-top: 18px;">
+        <h4 style="color: #92400e; font-size: 1.05rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          <span>🎯</span> 6. Iriun 多手機編號（#1 / #2 / #3）綁定規則 ＆ 啟動後快速對調秘訣
+        </h4>
+        <p style="font-size: 0.92rem; line-height: 1.7; color: #78350f; margin-bottom: 12px;">
+          <strong>【核心原理】</strong>：Iriun 電腦版官方軟體<strong>沒有提供「手動直接修改或切換手機編號」的按鈕</strong>。Iriun 底層完全依據<strong>「先開先搶（先連上電腦的就是 #1，次之為 #2，最後為 #3）」</strong>的原則分派通道。
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+          <div style="background: #ffffff; border-radius: 6px; padding: 12px; border: 1px solid #fef3c7;">
+            <h5 style="color: #b45309; font-size: 0.92rem; font-weight: 700; margin-bottom: 6px;">⚡ 狀況一：啟動後發現畫面順序顛倒了，怎麼快速改？</h5>
+            <ul style="margin-left: 16px; font-size: 0.85rem; line-height: 1.7; color: #334155;">
+              <li><strong>方法 A（最快！直接在 OBS 裡對調，免動手機）</strong>：<br>
+                若 iPhone X 搶成 #3、ASUS 搶成 #2，直接在 OBS 來源點擊【iPhone X - 側面副鏡】➔ 裝置改選 <code>Iriun Webcam #3</code>；【Asus會眾全景】改選 <code>Iriun Webcam #2</code>，<strong>3 秒立刻歸位！</strong>
+              </li>
+              <li><strong>方法 B（手機滑掉 App 重新遞補）</strong>：<br>
+                Iriun 的特性是「哪一台斷線，它的號碼就會空出來給下一台補」。若 ASUS 搶錯變成 #2，只要在 ASUS 手機上<strong>往上滑掉關閉 Iriun</strong>（#2 騰空），接著點開 iPhone X（立即搶下 #2），最後再開 ASUS（自動排進 #3）！
+              </li>
+            </ul>
+          </div>
+
+          <div style="background: #ffffff; border-radius: 6px; padding: 12px; border: 1px solid #fef3c7;">
+            <h5 style="color: #b45309; font-size: 0.92rem; font-weight: 700; margin-bottom: 6px;">🛡️ 狀況二：如何保證「每次開機 100% 永遠不跳號」？</h5>
+            <ul style="margin-left: 16px; font-size: 0.85rem; line-height: 1.7; color: #334155;">
+              <li><strong>腳本時序自動防呆</strong>：最新版 <code>【主日開機】一鍵喚醒全場相機.bat</code> 已內建智慧延遲：
+                <ol style="margin-left: 15px; margin-top: 4px;">
+                  <li>先啟動 A27（USB）➔ 必定鎖定 <strong>Iriun #1</strong></li>
+                  <li>提示同工點亮桌邊 iPhone X ➔ 必定搶下 <strong>Iriun #2</strong></li>
+                  <li>倒數 5 秒自動啟動 ASUS（Wi-Fi）➔ 必定鎖定 <strong>Iriun #3</strong></li>
+                </ol>
+              </li>
+              <li><strong>一鍵救援神器</strong>：桌面點擊 <code>【畫面順序錯亂時】一鍵重整相機順序.bat</code>，全自動殺死進程並按 1-2-3 順序精準重新啟動！</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. 如何取得 A27 有線序號 ＆ ASUS 無線 IP 並綁定至 BAT -->
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 18px; margin-top: 18px;">
+        <h4 style="color: #166534; font-size: 1.05rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          <span>🔍</span> 7. 如何取得 A27 有線序號 ＆ ASUS 無線 IP，並順利寫入 BAT 腳本？
+        </h4>
+        <p style="font-size: 0.92rem; line-height: 1.7; color: #14532d; margin-bottom: 12px;">
+          許多同工疑惑：「BAT 腳本是怎麼知道哪台是 A27、哪台是 ASUS 的？」答案是透過 <strong>Android ADB 的專屬裝置識別機制</strong>：
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+          <div style="background: #ffffff; border-radius: 6px; padding: 12px; border: 1px solid #dcfce7;">
+            <h5 style="color: #15803d; font-size: 0.92rem; font-weight: 700; margin-bottom: 6px;">🔌 A27 有線手機（USB 專屬識別）</h5>
+            <ul style="margin-left: 16px; font-size: 0.85rem; line-height: 1.7; color: #334155;">
+              <li><strong>【免查序號極致解法（最推薦）】</strong>：<br>
+                在 BAT 腳本中使用 <code>adb -d</code> 參數（<code>-d</code> 代表 Direct to only USB device）。因為 iPhone X 為 iOS 不走 ADB，電腦插線的安卓手機<strong>永遠只有 A27 一台</strong>！只要加 <code>-d</code>，ADB 永遠 100% 只會控制 A27，<strong>完全不需要手動查序號，換 USB 線也能直接用！</strong>
+              </li>
+              <li><strong>【若想手動查詢實體序號】</strong>：<br>
+                插上 USB 線，在電腦終端機輸入 <code>adb devices</code>，顯示如 <code>R58M30XYZAB device</code>，前面那一串代碼即為 A27 的專屬硬體序號。
+              </li>
+            </ul>
+          </div>
+
+          <div style="background: #ffffff; border-radius: 6px; padding: 12px; border: 1px solid #dcfce7;">
+            <h5 style="color: #15803d; font-size: 0.92rem; font-weight: 700; margin-bottom: 6px;">📶 ASUS 會眾機（5GHz Wi-Fi IP 綁定）</h5>
+            <ul style="margin-left: 16px; font-size: 0.85rem; line-height: 1.7; color: #334155;">
+              <li><strong>【取得無線編號（IP 與 Port）】</strong>：<br>
+                在 ASUS 手機「設定」➔「關於手機」➔「狀態資訊」查看 Wi-Fi IP（例如 <code>192.168.1.50</code>），它的 ADB 無線編號即為 <code>192.168.1.50:5555</code>。
+              </li>
+              <li><strong>【如何寫入 BAT 腳本？】</strong>：<br>
+                捷徑工具目錄下已有 <code>asus_ip.txt</code> 檔，BAT 腳本開頭會自動讀取 <code>set /p ASUS_IP=&lt;"asus_ip.txt"</code>，並以 <code>adb -s %ASUS_IP%:5555</code> 精準發送指令給 ASUS。
+              </li>
+              <li><strong>【一鍵自動綁定工具】</strong>：<br>
+                點擊 <code>【工具】一鍵查詢相機編號與綁定.bat</code>，輸入新 IP 後自動測試連線並同步更新到所有腳本！
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 模組三：GTX 1650 顯卡最佳化配置 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="num-badge">3</div>
+        <h2>GTX 1650 顯卡最佳化配置（NVENC 硬體編碼 + 舞台安全框）</h2>
+      </div>
+
+      <div class="alert alert-warning">
+        <strong>⚠️ 重要硬體限制說明：</strong><br>
+        教會電腦顯卡為 <strong>NVIDIA GeForce GTX 1650</strong>。請注意：<code>NVIDIA Broadcast</code> 軟體強制要求 RTX 2060 以上顯卡（具備 Tensor Core AI 晶片），在 GTX 1650 上無法安裝。針對現場設備，我們採用以下<strong>最穩健的配置方案</strong>：
+      </div>
+
+      <h3 style="margin: 18px 0 10px 0; color: #1e3a8a;">一、 走動追焦的最佳解法：正面距離 4 米「1.0x 舞台安全框」（零負擔、最推薦！）</h3>
+      <p style="font-size: 0.95rem; line-height: 1.8;">
+        在距離講台 4 米處，Galaxy A27 的 <strong>1.0x 鏡頭視野寬度高達 5.4 公尺</strong>，已將整座講台與兩側走廊 100% 吃滿：<br>
+        • <strong>牧師不管向左走、向右走，整場講道人永遠都在鏡頭內，絕不出鏡！</strong><br>
+        • 在 OBS 來源中直接選取 <code>Iriun Webcam #1</code>，不需要任何額外軟體轉接，不耗費顯卡算力，穩定度 100%，畫質最純淨！
+      </p>
+
+      <h3 style="margin: 20px 0 10px 0; color: #1e3a8a;">二、 若仍希望鏡頭自動追焦：改用 OBS 免費外掛「OBS Face Tracker」</h3>
+      <p style="font-size: 0.95rem; line-height: 1.8;">
+        如果仍希望畫面能隨牧師走動自動推拉，請改用不限顯卡的開源外掛 <strong><code>obs-face-tracker</code></strong>：<br>
+        1. 下載並安裝開源外掛 <code>obs-face-tracker</code>。<br>
+        2. 在 OBS 的 Galaxy A27 來源點右鍵 ➔ <strong>濾鏡 (Filters)</strong> ➔ 效果濾鏡點 <code>+</code> ➔ 新增 <strong>Face Tracker</strong>。<br>
+        3. <strong>縮放 (Zoom)</strong> 設為 <code>1.2x</code>，<strong>平滑度 (Smoothing)</strong> 設為 <code>85%</code>，即可在 GTX 1650 上順暢運作！
+      </p>
+
+      <h3 style="margin: 20px 0 10px 0; color: #15803d;">三、 發揮 GTX 1650 的真正王牌：【啟用 NVENC 獨立硬體編碼】（最關鍵！）</h3>
+      <p style="font-size: 0.95rem; line-height: 1.8;">
+        GTX 1650 內建專用 <strong>NVENC 硬體編碼晶片</strong>，務必在 OBS 開啟，能讓 CPU 負載直接降到 10% 以下：
+      </p>
+      <ol style="margin-left: 20px; line-height: 1.8; font-size: 0.95rem;">
+        <li>打開 OBS ➔ 點選 <strong>「設定 (Settings)」</strong> ➔ <strong>「輸出 (Output)」</strong>。</li>
+        <li>將頂部「輸出模式」改為 <strong>【進階 (Advanced)】</strong>。</li>
+        <li><strong>視訊編碼器 (Video Encoder)</strong>：下拉務必選取 <strong><code>NVIDIA NVENC H.264</code></strong>（千萬別選 x264 軟解）。</li>
+        <li><strong>位元率 (Bitrate)</strong>：填入 <strong><code>6000 Kbps</code></strong>（1080P 60fps 高清標準）。</li>
+      </ol>
+      <div class="alert alert-success" style="margin-top: 12px;">
+        <strong>✨ 效果：</strong>直播即時壓縮全部交由 GTX 1650 獨立晶片處理，電腦完全不發熱、不掉幀、徹底告別卡頓！
+      </div>
+
+      <h3 style="margin: 22px 0 10px 0; color: #1e3a8a;">四、 正面主鏡如何在電腦端控制縮放 (Zoom)？（免離座 3 種解法）</h3>
+      <p style="font-size: 0.95rem; line-height: 1.8;">
+        Galaxy A27 距離講台 4 米，為免同工離開音控桌走動，同工坐在電腦前可透過以下 3 種方式輕鬆調整鏡頭縮放：
+      </p>
+      
+      <div style="background: #f8fafc; border-left: 4px solid var(--primary); padding: 14px 18px; margin: 12px 0; border-radius: 0 8px 8px 0; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+        <h4 style="color: var(--primary); font-size: 1rem; margin-bottom: 6px;">💡 解法 A：OBS 內部數位推拉構圖（最推薦、零成本、即時調整）</h4>
+        <ul style="margin-left: 20px; line-height: 1.8; font-size: 0.92rem;">
+          <li><strong>手動即時推拉</strong>：在 OBS 預覽視窗點選該視訊畫面，直接拖曳邊角紅點放大（Zoom In），拖曳畫面中央即可微調平移（Pan/Tilt）。</li>
+          <li><strong>雙場景平滑推鏡頭（電視台效果）</strong>：在 OBS 建立「講道-正面大景 (1.0x)」與「講道-正面特寫 (1.3x)」兩個場景，搭配免費外掛 <strong><code>Move Transition</code></strong>，切換時畫面會像電視台搖臂或電動變焦鏡頭般平滑推進，極具質感！</li>
+        </ul>
+      </div>
+
+      <div style="background: #f8fafc; border-left: 4px solid var(--success); padding: 14px 18px; margin: 12px 0; border-radius: 0 8px 8px 0; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+        <h4 style="color: var(--success); font-size: 1rem; margin-bottom: 6px;">🖱️ 解法 B：免費開源神器 Scrcpy（用電腦滑鼠直接遙控手機螢幕）</h4>
+        <ul style="margin-left: 20px; line-height: 1.8; font-size: 0.92rem;">
+          <li><strong>免離座遠端操控</strong>：Galaxy A27 已開啟「USB 偵錯」，在電腦端執行開源工具 <strong><code>scrcpy.exe</code></strong>，電腦螢幕會即刻跳出手機鏡像視窗。</li>
+          <li><strong>滑鼠滾輪直接變焦</strong>：坐在電腦前滾動滑鼠滾輪即可遠端變焦（Zoom In / Out），滑鼠長按點擊螢幕即可遠端執行 AE/AF 對焦與曝光鎖定！</li>
+        </ul>
+      </div>
+
+      <div style="background: #f8fafc; border-left: 4px solid var(--warning); padding: 14px 18px; margin: 12px 0; border-radius: 0 8px 8px 0; border-top: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+        <h4 style="color: var(--warning); font-size: 1rem; margin-bottom: 6px;">⚙️ 解法 C：OBS Face Tracker 濾鏡面板數值</h4>
+        <ul style="margin-left: 20px; line-height: 1.8; font-size: 0.92rem;">
+          <li>若有加裝開源外掛 <code>obs-face-tracker</code>，在濾鏡屬性面板內直接將 <strong><code>Zoom</code></strong> 數值從 1.0 改為 1.25，畫面立即自動放大並保持人臉置中。</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 模組四：手機調校 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="num-badge">4</div>
+        <h2>告別油畫臉——手機畫質與測光調校（電腦遠端 + 實體雙解法）</h2>
+      </div>
+      <p style="font-size: 0.95rem; line-height: 1.8;">
+        聚會前 5 分鐘，請務必執行此<strong>黃金對焦動作</strong>！<br>
+        <strong>關鍵原理</strong>：手機自動測光常因講台背後的白牆過亮而整體誤判，導致牧師臉部過曝死白，觸發手機內部強行抹皮降噪（油畫臉）。只要手動鎖定曝光並將亮度壓低 10%～15%，白牆死白立即消失，牧師的五官與輪廓細節瞬間清晰立體！
+      </p>
+
+      <!-- 方法一：電腦端遠端操作（最推薦） -->
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 18px; margin: 16px 0;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+          <h3 style="color: #166534; font-size: 1.1rem; font-weight: 700;">🖥️ 方法一：坐在電腦前滑鼠遠端控制（最推薦、同工零離座）</h3>
+          <span style="background: #dcfce7; color: #15803d; font-size: 0.8rem; font-weight: 700; padding: 3px 10px; border-radius: 12px;">免走動一鍵搞定</span>
+        </div>
+        <p style="font-size: 0.92rem; color: #334155; margin-bottom: 10px;">
+          同工坐在音控桌電腦前，透過 <code>遠端操控正面主鏡(滾輪縮放+熄屏).bat</code> 即可用電腦滑鼠搞定所有測光與防護：
+        </p>
+
+        <ol style="margin-left: 20px; line-height: 1.8; font-size: 0.92rem; color: #1e293b;">
+          <li><strong>滑鼠長按鎖定曝光 (AE/AF Lock)</strong>：
+            在跳出的手機視窗中，將滑鼠游標移至牧師臉部，<strong>按住滑鼠左鍵不放約 1.5～2 秒</strong>，畫面上即跳出黃色「AE/AF 鎖定」方框。
+          </li>
+          <li><strong>滑鼠拖曳手動壓低亮度 10%～15%</strong>：
+            鎖定框旁會出現一顆小太陽亮度滑桿，<strong>用滑鼠按住小太陽輕輕往下拉一點點</strong>，即可手動壓低畫面曝光。<br>
+            <em style="color: #15803d;">✨ 瞬間效果：白牆不再死白反光，相機自動停用抹皮演算法，牧師五官細節立刻清晰銳利！</em>
+          </li>
+          <li><strong>電腦端全自動工作防護（零設定負擔）</strong>：
+            <ul style="margin-left: 18px; margin-top: 4px;">
+              <li><strong>實體螢幕自動熄滅</strong>：工具自帶 <code>--turn-screen-off</code>，手機實體螢幕全黑，免除手動調暗螢幕的麻煩，內部晶片與電池完全不發熱！</li>
+              <li><strong>永久防休眠</strong>：工具自帶 <code>--stay-awake</code>，連線中手機永不休眠鎖定。</li>
+              <li><strong>遠端開啟勿擾模式</strong>：在視窗中用滑鼠從手機頂部下拉，點擊「勿擾模式」快捷鍵即可。</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+
+      <!-- 方法二：手機端手動操作（備用） -->
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px;">
+        <h4 style="color: #475569; font-size: 1rem; margin-bottom: 8px;">📱 方法二：在手機實體螢幕上手動操作（若同工剛好人在講台旁）</h4>
+        <ol style="margin-left: 20px; line-height: 1.8; font-size: 0.9rem; color: #334155;">
+          <li><strong>長按螢幕鎖定曝光 (AE/AF Lock)</strong>：人站在講台上，在手機螢幕長按牧師臉部 2 秒，出現黃色鎖定圓圈。</li>
+          <li><strong>手指下拉壓低亮度</strong>：在鎖定框旁的太陽圖示，手指輕輕往下滑動一點點，將整體畫面亮度手動壓低 10%～15%。</li>
+          <li><strong>手動狀態保護</strong>：手機螢幕亮度手動拉到最低（減少發熱）、自動休眠設為「永不」、開啟「勿擾模式」。</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- 模組五：畫面排版與場景命名 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="num-badge">5</div>
+        <h2>OBS 場景命名規範與畫面排版構圖（講道 100% 滿版 + 敬拜雙畫面）</h2>
+      </div>
+
+      <!-- OBS 7 大標準場景命名表 -->
+      <h3 style="margin-bottom: 10px; color: #1e3a8a;">🎬 OBS 主日全流程場景命名規範表（對應實況截圖）</h3>
+      <p style="font-size: 0.95rem; margin-bottom: 12px;">
+        講道 4 大核心場景採用<strong>【設備型號 + 機位任務】</strong>命名，同工坐在電腦前一目了然，絕不按錯：
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 25%;">OBS 場景名稱 (直接建立)</th>
+            <th style="width: 20%;">對應現場截圖</th>
+            <th style="width: 15%;">切換方式</th>
+            <th style="width: 22%;">內部視訊來源 (Sources)</th>
+            <th style="width: 18%;">角色與功能</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="background: #f8fafc;">
+            <td><strong>開場歡迎</strong><br><span style="font-size: 0.8rem; color: #64748b;">(或 01_開場歡迎)</span></td>
+            <td><strong>0:01 截圖</strong><br>五常教會主日敬拜片頭</td>
+            <td><span style="background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-size: 0.82rem; font-weight: 600;">同工手動點擊</span><br>(09:45 開播預備)</td>
+            <td>• <code>【開場圖卡/PPT封面】</code><br>• <code>【預備詩歌音訊】</code></td>
+            <td>開播歡迎首頁</td>
+          </tr>
+          <tr style="background: #f8fafc;">
+            <td><strong>敬拜雙畫面</strong><br><span style="font-size: 0.8rem; color: #64748b;">(或 02_敬拜雙畫面)</span></td>
+            <td><strong>4:40 截圖</strong><br>上歌詞 + 下主領會眾雙鏡頭</td>
+            <td><span style="background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-size: 0.82rem; font-weight: 600;">同工手動切換</span><br>(10:00 唱詩開始)</td>
+            <td>• <code>ppt</code> (裁切頂部歌詞)<br>• <code>Iriun #1</code> (左側主領)<br>• <code>Iriun #3</code> (右側會眾)</td>
+            <td>唱詩歌詞+雙鏡頭</td>
+          </tr>
+          <tr style="background: #eff6ff;">
+            <td><strong style="color: #1d4ed8;">Galaxy A27 - 正面主鏡</strong></td>
+            <td><strong>29:40 截圖</strong><br>牧師講道正面 4 米平視視角</td>
+            <td><span style="background: #fef08a; color: #854d0e; padding: 2px 6px; border-radius: 4px; font-size: 0.82rem; font-weight: 700;">同工手動按 1 次！</span><br>(後續巨集自動循環)</td>
+            <td>• <code>Iriun Webcam #1</code><br>(Galaxy A27 滿版 1080P)</td>
+            <td><strong>講道核心主鏡頭</strong></td>
+          </tr>
+          <tr style="background: #eff6ff;">
+            <td><strong style="color: #1d4ed8;">iPhone X - 側面副鏡</strong></td>
+            <td><strong>側前方機位</strong><br>廁所前斜拍牧師表情特寫</td>
+            <td><span style="background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-size: 0.82rem; font-weight: 600;">OBS 巨集全自動</span><br>(主鏡待滿 80 秒 80% 切入)</td>
+            <td>• <code>Iriun Webcam #2</code><br>(iPhone X 滿版 1080P)</td>
+            <td><strong>表情與手勢特寫</strong><br>(停留 18 秒回主鏡)</td>
+          </tr>
+          <tr style="background: #eff6ff;">
+            <td><strong style="color: #1d4ed8;">Asus會眾全景</strong></td>
+            <td><strong>後方俯拍機位</strong><br>ASUS 手機 Wi-Fi 俯拍會眾</td>
+            <td><span style="background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-size: 0.82rem; font-weight: 600;">OBS 巨集全自動</span><br>(主鏡待滿 80 秒 20% 切入)</td>
+            <td>• <code>Iriun Webcam #3</code><br>(ASUS 無線 滿版 1080P)</td>
+            <td><strong>現場氛圍點綴</strong><br>(快閃 6 秒回主鏡)</td>
+          </tr>
+          <tr style="background: #eff6ff;">
+            <td><strong style="color: #1d4ed8;">ppt</strong></td>
+            <td><strong>20:35 截圖</strong><br>十誡/經文純淨滿版簡報</td>
+            <td><span style="background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 4px; font-size: 0.82rem; font-weight: 600;">OBS 巨集全自動</span><br>(偵測 PPT 換頁變動 > 8%)</td>
+            <td>• <code>【投影機簡報畫面】</code><br>(顯示器 2 滿版 1080P)</td>
+            <td><strong>經文與重點插播</strong><br>(停留 25 秒回主鏡)</td>
+          </tr>
+          <tr style="background: #f8fafc;">
+            <td><strong>祝禱散會</strong><br><span style="font-size: 0.8rem; color: #64748b;">(或 04_祝禱散會)</span></td>
+            <td><strong>聚會尾聲</strong><br>牧師祝禱與會眾互道平安</td>
+            <td><span style="background: #e0f2fe; color: #0369a1; padding: 2px 6px; border-radius: 4px; font-size: 0.82rem; font-weight: 600;">同工手動切換</span><br>(祝禱散會時)</td>
+            <td>• <code>Iriun Webcam #3</code> (會眾全景)<br>• <code>【平安片尾字卡】</code></td>
+            <td>聚會圓滿結束</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="margin: 25px 0 10px 0; color: #1e3a8a;">一、 講道階段：100% 純滿版全自動切換（字體最大、最清楚）</h3>
+      <p style="font-size: 0.95rem;">講道時完全不做複雜分割，換頁只有 25 秒，直接 100% 滿版全螢幕最舒適：</p>
+      
+      <div class="ascii-box">
+【平日講道模式 (100% 滿版)】                   【簡報換頁模式 (強制插播 25 秒)】
+┌─────────────────────────────────┐           ┌─────────────────────────────────┐
+│                                 │           │                                 │
+│                                 │   跳頁    │     100% 全螢幕滿版簡報         │
+│       牧師講道畫面 (滿版)       │  ─────>   │        (1920 × 1080)            │
+│   (正面主鏡 / 側拍副鏡 / 會眾)   │  <─────   │    字體最大・無任何小框遮擋     │
+│                                 │  25秒後   │                                 │
+│                                 │   切回    │                                 │
+└─────────────────────────────────┘           └─────────────────────────────────┘
+      </div>
+
+      <h3 style="margin: 25px 0 10px 0; color: #1e3a8a;">二、 敬拜讚美階段：40/60 雙卡片（60:40 主領大、會眾小）</h3>
+      <div class="ascii-box">
+┌────────────────────────────────────────────────────────────────────────┐
+│               在曠野中開道路  在沙漠中開江河 (歌詞專區)                 │
+│               【高 440px，純白底、深海軍藍 #1B263B 大字】              │
+├────────────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────┐  ┌─────────────────────────────┐  │
+│  │     左鏡頭：主領 / 敬拜團       │  │     右鏡頭：現場會眾        │  │
+│  │           ( 60% 較大 )          │  │        ( 40% 輔助 )         │  │
+│  │      【寬 1100px × 高 530px】   │  │    【寬 720px × 高 530px】  │  │
+│  └─────────────────────────────────┘  └─────────────────────────────┘  │
+└────────────────────────────────────────────────────────────────────────┘
+      </div>
+
+      <h4 style="margin: 15px 0 8px 0;">OBS 1080P 精確像素與座標設定：</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>視訊物件</th>
+            <th>寬度 (Width)</th>
+            <th>高度 (Height)</th>
+            <th>X 座標</th>
+            <th>Y 座標</th>
+            <th>操作技巧</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>上半部歌詞</strong></td>
+            <td>1920 px</td>
+            <td>440 px</td>
+            <td>0</td>
+            <td>0</td>
+            <td>純白底，大字深海軍藍 (#1B263B)</td>
+          </tr>
+          <tr>
+            <td><strong>左側【主領框】</strong></td>
+            <td><strong>1100 px</strong></td>
+            <td><strong>530 px</strong></td>
+            <td><strong>35</strong></td>
+            <td><strong>480</strong></td>
+            <td>按住 <code>Alt</code> 鍵拖曳左邊緣，修掉場外揮舞的人手</td>
+          </tr>
+          <tr>
+            <td><strong>右側【會眾框】</strong></td>
+            <td><strong>720 px</strong></td>
+            <td><strong>530 px</strong></td>
+            <td><strong>1165</strong></td>
+            <td><strong>480</strong></td>
+            <td>按住 <code>Alt</code> 鍵拖曳上邊緣，修掉天花板管線燈管</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 插入 OBS 精準輸入數值教學 -->
+      <div style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 18px; margin-top: 20px;">
+        <h4 style="color: #0f172a; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          <span style="background: #2563eb; color: #fff; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.8rem;">?</span>
+          如何在 OBS 精確手動輸入上述寬度、高度與座標？（免滑鼠猜測）
+        </h4>
+        <ol style="margin-left: 20px; line-height: 1.8; font-size: 0.95rem;">
+          <li><strong>打開編輯變形視窗</strong>：在 OBS 來源清單點選該鏡頭，按鍵盤快捷鍵 <code>Ctrl + E</code>（或在畫面上按右鍵 ➔「變形」➔「編輯變形」）。</li>
+          <li><strong>位置對齊（最關鍵！）</strong>：視窗最上方的「位置對齊 (Positional Alignment)」下拉選單，<strong>務必先改為【左上 (Top Left)】</strong>，這樣輸入的 X、Y 座標才會以畫面左上頂點為基準。</li>
+          <li><strong>手動輸入數值</strong>：
+            <ul style="margin-left: 20px; margin-top: 4px;">
+              <li><strong>位置 (Position)</strong>：輸入 <code>X: 35</code>、<code>Y: 480</code>（依表格數值輸入）。</li>
+              <li><strong>大小 (Size)</strong>：輸入 <code>寬度: 1100</code>、<code>高度: 530</code>。</li>
+              <li><strong>邊界方框類型 (Bounding Box Type)</strong>：選擇 <strong>【縮放至邊界 (Scale to bounds)】</strong>，視窗瞬間精準成型！</li>
+            </ul>
+          </li>
+          <li><strong>按住 Alt 鍵手動裁切（防人臉拉皮變形）</strong>：輸入完後若人物臉型被些微壓扁，回到 OBS 預覽主畫面，<strong>按住鍵盤 <code>Alt</code> 鍵不放</strong>，用滑鼠拖曳邊框綠點往內微調，即可直接裁掉多餘邊緣，身形比例 100% 完美自然。</li>
+          <li><strong>點擊小鎖頭 🔒 鎖定</strong>：調整完成後，在 OBS 來源清單將該鏡頭旁邊的<strong>小鎖頭圖示點一下鎖定</strong>，之後即使滑鼠誤觸畫面也絕不跑位！</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- 模組六：自動化巨集 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="num-badge">6</div>
+        <h2>OBS 自動化總控（Advanced Scene Switcher 巨集設定）</h2>
+      </div>
+      <p>打開 OBS ➔ 工具 ➔ <strong>Advanced Scene Switcher</strong> ➔ 進入 <code>Macro</code> 分頁建立以下 4 組規則：</p>
+
+      <div style="margin-top: 15px;">
+        <div style="background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 12px;">
+          <h4 style="color: #b91c1c;">⚡ 巨集 1：【簡報跳頁自動滿版插播】（具備敬拜防誤觸鎖）</h4>
+          <p style="margin: 5px 0; font-size: 0.9rem;"><strong>條件 (If - 兩者 AND)</strong>：<br>
+          1. <code>Scene</code> ➔ <code>Current scene</code> <strong>is one of</strong> 勾選：<code>Galaxy A27 - 正面主鏡</code>、<code>iPhone X - 側面副鏡</code>、<code>Asus會眾全景</code>、<code>ppt</code><br>
+          <em>(⚠️ 絕對不要勾選「敬拜雙畫面」或「開場歡迎」！確保唱詩歌換歌詞時絕不亂跳！)</em><br>
+          2. <code>Video</code> ➔ 來源選 <code>[投影機簡報畫面]</code>（即顯示器 2 擷取）➔ 檢查 <code>change</code> ➔ 閾值設 <code>8%</code></p>
+          <p style="margin: 5px 0; font-size: 0.9rem;"><strong>動作 (Then)</strong>：<br>
+          1. <code>Switch scene to</code> ➔ <strong>ppt</strong><br>
+          2. <code>Wait</code> ➔ <strong>25 秒</strong><br>
+          3. <code>Switch scene to</code> ➔ <strong>Galaxy A27 - 正面主鏡</strong></p>
+        </div>
+
+        <div style="background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 12px;">
+          <h4 style="color: #1e3a8a;">🔄 巨集 2：【主鏡頭待滿 ➔ 自動輪播】（建議 75～90 秒，沉穩耐看）</h4>
+          <p style="margin: 5px 0; font-size: 0.9rem;"><strong>條件</strong>：<code>Scene</code> is <strong>Galaxy A27 - 正面主鏡</strong> 且 <code>Scene timer</code> > <strong>80 秒</strong> <em>（加長至 75～90 秒約 1 分半，觀看更沉穩不眼花）</em><br>
+          <strong>動作</strong>：<code>Switch scene to</code> ➔ <strong>Random 隨機</strong>（80% 切換至 <strong>iPhone X - 側面副鏡</strong>、20% 切換至 <strong>Asus會眾全景</strong>）</p>
+        </div>
+
+        <div style="background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 12px;">
+          <h4 style="color: #1e3a8a;">🔄 巨集 3：【側拍待滿 ➔ 回主鏡】</h4>
+          <p style="margin: 5px 0; font-size: 0.9rem;"><strong>條件</strong>：<code>Scene</code> is <strong>iPhone X - 側面副鏡</strong> 且 <code>Scene timer</code> > <strong>18 秒</strong><br>
+          <strong>動作</strong>：<code>Switch scene to</code> ➔ <strong>Galaxy A27 - 正面主鏡</strong></p>
+        </div>
+
+        <div style="background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #cbd5e1;">
+          <h4 style="color: #1e3a8a;">🔄 巨集 4：【會眾快閃 ➔ 回主鏡】</h4>
+          <p style="margin: 5px 0; font-size: 0.9rem;"><strong>條件</strong>：<code>Scene</code> is <strong>Asus會眾全景</strong> 且 <code>Scene timer</code> > <strong>6 秒</strong><br>
+          <strong>動作</strong>：<code>Switch scene to</code> ➔ <strong>Galaxy A27 - 正面主鏡</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 模組七：捷徑工具清單 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="num-badge" style="background: #0284c7;">7</div>
+        <h2>影音同工專用電腦捷徑工具包（會眾機無線休眠/喚醒 ＆ 一鍵全控）</h2>
+      </div>
+      <p style="font-size: 0.95rem; margin-bottom: 16px;">
+        已在電腦 <code>E:\Antigravity_Data\五常教會直播設置\捷徑工具\</code> 為您備妥完整的捷徑工具。支援 <strong>正面 A27 有線</strong> 與 <strong>會眾 ASUS 無線</strong> 的獨立休眠/喚醒，以及<strong>【一鍵全場總控】</strong>：
+      </p>
+
+      <!-- 👑 一鍵總控專區 -->
+      <div style="background: linear-gradient(135deg, #eff6ff, #f0fdf4); border: 2px solid #3b82f6; border-radius: 10px; padding: 18px; margin-bottom: 20px;">
+        <h3 style="color: #1e40af; font-size: 1.1rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+          <span>👑</span> 影音同工最推薦：主日一鍵總控捷徑（建議直接放桌面！）
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px;">
+          <div style="background: #ffffff; border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-weight: 700; color: #15803d; font-size: 1rem;">🚀 【主日開機】一鍵喚醒全場相機.bat</span>
+              <span style="background: #dcfce7; color: #15803d; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px;">聚會前點 1 次</span>
+            </div>
+            <p style="font-size: 0.88rem; color: #334155; line-height: 1.6;">
+              • <strong>一鍵雙機雙開</strong>：同時喚醒 <strong>Galaxy A27 (USB)</strong> 與 <strong>ASUS 會眾機 (Wi-Fi)</strong>。<br>
+              • <strong>全自動流程</strong>：自動連線 ➔ 點亮螢幕 ➔ 自動滑動解鎖 ➔ <strong>自動啟動兩台手機的 Iriun Webcam App</strong>！<br>
+              • <strong>效果</strong>：點擊 4 秒內全場相機全部就位，OBS 立即收到 1080P 訊號，免來回奔走！
+            </p>
+          </div>
+          <div style="background: #ffffff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-weight: 700; color: #1d4ed8; font-size: 1rem;">🌙 【主日散會】一鍵休眠全場相機.bat</span>
+              <span style="background: #dbeafe; color: #1d4ed8; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 12px;">祝禱後點 1 次</span>
+            </div>
+            <p style="font-size: 0.88rem; color: #334155; line-height: 1.6;">
+              • <strong>一鍵雙機全休眠</strong>：同時發送休眠指令給 <strong>Galaxy A27</strong> 與 <strong>ASUS 會眾機</strong>。<br>
+              • <strong>深層黑屏省電</strong>：兩台手機實體螢幕完全關閉，進入深層黑屏休眠，一週僅耗約 30% 電。<br>
+              • <strong>效果</strong>：點擊後同工直接將直播電腦正常關機離去，下週一鍵喚醒！
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 📱 單機獨立工具專區 -->
+      <h3 style="color: #334155; font-size: 1rem; margin-bottom: 12px;">📱 各機位獨立控制工具（隨選操作）：</h3>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;">
+        <!-- 工具 1：喚醒正面主鏡 -->
+        <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px;">
+          <span style="font-weight: 700; color: #166534; font-size: 0.95rem;">☀️ 喚醒正面主鏡.bat</span>
+          <p style="font-size: 0.85rem; color: #475569; margin-top: 6px; line-height: 1.5;">
+            專屬點亮 Galaxy A27 (USB 3.0)、自動解鎖並開啟 Iriun。
+          </p>
+        </div>
+
+        <!-- 工具 2：休眠正面主鏡 -->
+        <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px;">
+          <span style="font-weight: 700; color: #334155; font-size: 0.95rem;">🌙 休眠正面主鏡.bat</span>
+          <p style="font-size: 0.85rem; color: #475569; margin-top: 6px; line-height: 1.5;">
+            專屬關閉 Galaxy A27 螢幕，進入深層黑屏休眠。
+          </p>
+        </div>
+
+        <!-- 工具 3：喚醒會眾全景 (ASUS) -->
+        <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; padding: 14px;">
+          <span style="font-weight: 700; color: #6d28d9; font-size: 0.95rem;">📶 喚醒會眾全景(ASUS_無線).bat</span>
+          <p style="font-size: 0.85rem; color: #475569; margin-top: 6px; line-height: 1.5;">
+            透過 Wi-Fi 遠端喚醒 ASUS 會眾機、解鎖並啟動 Iriun（具備 IP 自動記憶）。
+          </p>
+        </div>
+
+        <!-- 工具 4：休眠會眾全景 (ASUS) -->
+        <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px; padding: 14px;">
+          <span style="font-weight: 700; color: #6d28d9; font-size: 0.95rem;">💤 休眠會眾全景(ASUS_無線).bat</span>
+          <p style="font-size: 0.85rem; color: #475569; margin-top: 6px; line-height: 1.5;">
+            透過 Wi-Fi 遠端關閉 ASUS 會眾機螢幕進入黑屏休眠，免跨走道。
+          </p>
+        </div>
+
+        <!-- 工具 5：遠端操控主鏡 -->
+        <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px;">
+          <span style="font-weight: 700; color: #1e40af; font-size: 0.95rem;">🖥️ 遠端操控正面主鏡(滾輪縮放+熄屏).bat</span>
+          <p style="font-size: 0.85rem; color: #475569; margin-top: 6px; line-height: 1.5;">
+            Scrcpy 遠端滑鼠長按對焦曝光、滾輪推拉，實體螢幕自動熄滅不發燙。
+          </p>
+        </div>
+
+        <!-- 工具 6：遠端操控會眾全景 -->
+        <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px;">
+          <span style="font-weight: 700; color: #6d28d9; font-size: 0.95rem;">🖱️ 遠端操控會眾全景(安卓_無線).bat</span>
+          <p style="font-size: 0.85rem; color: #475569; margin-top: 6px; line-height: 1.5;">
+            Wi-Fi 無線鏡像 ASUS 畫面，滑鼠微調會眾鏡頭視角與對焦。
+          </p>
+        </div>
+
+        <!-- 工具 7：徹底關閉主鏡 -->
+        <div style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; padding: 14px;">
+          <span style="font-weight: 700; color: #9f1239; font-size: 0.95rem;">🔴 徹底關閉正面主鏡.bat</span>
+          <p style="font-size: 0.85rem; color: #475569; margin-top: 6px; line-height: 1.5;">
+            長假保養用，安全切斷 A27 電源關機（防誤觸 Y/N 確認）。
+          </p>
+        </div>
+
+        <!-- 工具 8：徹底關閉會眾全景 (ASUS) -->
+        <div style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: 8px; padding: 14px;">
+          <span style="font-weight: 700; color: #9f1239; font-size: 0.95rem;">🔴 徹底關閉會眾全景(ASUS_無線).bat</span>
+          <p style="font-size: 0.85rem; color: #475569; margin-top: 6px; line-height: 1.5;">
+            長假保養用，Wi-Fi 遠端關閉電源。<strong>注意：關機後無法遠端開機，下次需手動按電源鍵！</strong>
+          </p>
+        </div>
+
+        <!-- 工具 9：一鍵重整相機順序 -->
+        <div style="background: #fefce8; border: 1px solid #fef08a; border-radius: 8px; padding: 14px;">
+          <span style="font-weight: 700; color: #854d0e; font-size: 0.95rem;">🔄 【畫面順序錯亂時】一鍵重整相機順序.bat</span>
+          <p style="font-size: 0.85rem; color: #475569; margin-top: 6px; line-height: 1.5;">
+            畫面跳號救援用！自動重新釋放通道並按 1-2-3 順序精準重新啟動，秒修畫面顛倒。
+          </p>
+        </div>
+
+        <!-- 工具 10：一鍵查詢相機編號與綁定 -->
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px;">
+          <span style="font-weight: 700; color: #166534; font-size: 0.95rem;">🔍 【工具】一鍵查詢相機編號與綁定.bat</span>
+          <p style="font-size: 0.85rem; color: #475569; margin-top: 6px; line-height: 1.5;">
+            檢測目前連線之 A27 實體序號與 ASUS 區網 IP，自動同步記憶至所有 BAT 啟動腳本。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 模組八：SOP 檢核表 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="num-badge">8</div>
+        <h2>影音同工主日操作「5 步無腦現場檢核表」</h2>
+      </div>
+      <p>同工在現場對照打勾即可，講道開始後全程不用碰滑鼠：</p>
+
+      <ul class="checklist">
+        <li>
+          <input type="checkbox" id="step1">
+          <label for="step1">
+            <span class="step-time">聚會前 20 分鐘</span>
+            <strong>一鍵全喚醒與連線</strong>：電腦開機，點擊桌面<strong>【【主日開機】一鍵喚醒全場相機.bat】</strong>，Galaxy A27 (USB 3.0) 與 ASUS 會眾機 (5GHz Wi-Fi) 同時自動點亮並啟動 Iriun；桌邊 iPhone X 插 USB 線解鎖點開 Iriun。打開 PowerPoint 播放至延伸螢幕（投影機），打開 OBS 確認各機位與簡報畫面正常，輸出編碼器確認為 <code>NVIDIA NVENC H.264</code>。
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="step2">
+          <label for="step2">
+            <span class="step-time">聚會前 10 分鐘</span>
+            <strong>鎖定曝光</strong>：請人站在講台上，手機長按臉部鎖定 AE/AF 並手動降低亮度 10%～15% 防止白牆過曝（正面 A27 可直接在電腦用 Scrcpy 滑鼠長按鎖定，無需走動）。
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="step3">
+          <label for="step3">
+            <span class="step-time">10:00 聚會開始</span>
+            <strong>敬拜讚美</strong>：手動切換至【敬拜雙畫面】（唱詩歌期間大投影機放歌詞，OBS 鎖定不亂跳，同工隨心手動操作）。
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="step4">
+          <label for="step4">
+            <span class="step-time">牧師上台講道</span>
+            <strong>手動點 1 次！</strong>：<strong>手動點擊【Galaxy A27 - 正面主鏡】（整場講道只需按這一次！）</strong>。後續 PPT 換頁自動跳 ppt 滿版、三鏡頭（iPhone X、Asus會眾）定時自動輪播，全程由 OBS 自動完成！
+          </label>
+        </li>
+        <li>
+          <input type="checkbox" id="step5">
+          <label for="step5">
+            <span class="step-time">講道結束祝禱</span>
+            <strong>祝禱切回與一鍵全休眠</strong>：同工手動切換至【祝禱散會】。聚會結束後，點擊桌面<strong>【【主日散會】一鍵休眠全場相機.bat】</strong>讓正面主鏡與 ASUS 會眾機同時黑屏深層休眠，電腦正常關機即可（同工全程無需離開音控桌！）。
+          </label>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+</body>
+</html>
